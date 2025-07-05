@@ -19,7 +19,7 @@ def load_langraph_agentic_ai_app():
     user_message=st.chat_input("Enter your Message")
     if user_message:
         try:
-            obj_llm_config=GroqLLM(user_controls_inputs=user_input)
+            obj_llm_config=GroqLLM(user_controls_input=user_input)
             model=obj_llm_config.get_llm_model()
             if not model:
                 st.error("Error : LLM model cannot be iniatized")
