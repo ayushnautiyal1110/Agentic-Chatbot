@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 class Config:
-    def __init__(self,config_file="./src/langraphagenticai/ui/uiconfigfile.ini"):
+    def __init__(self,config_file="./src/langraphagenticai/ui/uiconfig.ini"):
         self.config=ConfigParser()
         self.config.read(config_file)
     def get_llm_options(self):
