@@ -1,9 +1,10 @@
 from langgraph.graph import StateGraph,START,END
-
+from src.langraphagenticai.nodes.chatbot_with_tool_node import  ChatBotWithToolNode
 from src.langraphagenticai.state.state import State
 from src.langraphagenticai.nodes.basic_chatbot_node import BasicChatbotNode 
 from langgraph.prebuilt import ToolNode,tools_condition
 from src.langraphagenticai.tools.search_tool import  get_tools,create_tool_node
+import streamlit as st
 class GraphBuilder:
 
     def __init__(self,model):
@@ -21,7 +22,11 @@ class GraphBuilder:
         tool_node=create_tool_node(tools)
 
         llm=self.llm
-        self.graph_builder.add_node("chatbot","")
+        obj_chatbot_with_node=ChatBotWithToolNode(llm)
+        # st.success("Chatbot with tool node success")
+        chatbot_node=obj_chatbot_with_node.create_chatbot(tools)
+        # st.success("create chatbot success")
+        self.graph_builder.add_node("chatbot",chatbot_node)
         self.graph_builder.add_node("tools",tool_node)
         self.graph_builder.add_edge(START,"chatbot")
         self.graph_builder.add_conditional_edges("chatbot",tools_condition)
@@ -47,8 +52,9 @@ class GraphBuilder:
         """
         Sets up the graph for the selected use case 
         """
+        # st.success("Inside Function setup_graph")
         if usecase == "Basic Chatbot":
             self.basic_chatbot_build_graph()
-        if usecase=="Chatbot with Web":
+        if usecase == "Chatbot with Tool":
             self.chatbot_with_tools_build_graph()
         return self.graph_builder.compile()

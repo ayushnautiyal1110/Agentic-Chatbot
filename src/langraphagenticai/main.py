@@ -30,12 +30,16 @@ def load_langraph_agentic_ai_app():
                 return
             
             graph_builder=GraphBuilder(model)
+            # st.success("Graph Builder Run succesfully")
             try:
                 graph=graph_builder.setup_graph(usecase)
+                # st.success("Graph Called Succesfully")
                 DisplayResultStreamlit(usecase,graph,user_message).display_result_on_ui()
             except Exception as e:
                 st.error(f"Error : Graph Set up Failed {e}")
+                # st.error("Inside Second Try")
                 return 
         except Exception as e:
             st.error(f"Graph Set up Failed - {e}")
+            # st.error("Inside First Try")
             return 
