@@ -1,6 +1,6 @@
 from tavily import TavilyClient
 from langchain_core.prompts import ChatPromptTemplate
-
+import streamlit as st
 class AINewsNode:
     def __init__(self,llm):
         """
@@ -18,7 +18,7 @@ class AINewsNode:
         Returns:
             dict : Updated  state   with 'news_data' key containing fetched news
         """
-        frequency=state['messages'][0].content_lower()
+        frequency=state['messages'][0].content.lower()
         self.state['frequency']=frequency
         time_range_map={'daily':'d' , 'weekly':'w', 'monthly':'m','year':'y'}
         days_map={'daily':1,'weekly':7 , 'monthly':30, 'year':366}
@@ -26,7 +26,7 @@ class AINewsNode:
         response=self.tavily.search(
             query="Give the news of India and Globally",
             topic="news",
-            time_range=time_range_map(frequency),
+            time_range=time_range_map[frequency],
             include_answer="advanced",
             max_results=15,
             days=days_map[frequency],
@@ -34,6 +34,7 @@ class AINewsNode:
         )
         state['news_data']=response.get('results',[])
         self.state['news_data']=state['news_data']
+        # st.success("Fetch News Called Succesfully")
         return state
     def summarize_news(self,state:dict)->dict:
         """
@@ -45,7 +46,7 @@ class AINewsNode:
 
         """
         news_items=self.state['news_data']
-        prompt_template=ChatPromptTemplate.from_message([
+        prompt_template=ChatPromptTemplate.from_messages([
             (
                 "system","""
                         Summarize news articles into markdown format . For each item include:
@@ -61,7 +62,7 @@ class AINewsNode:
         ])
         articles_str="\n\n".join(
             [
-                f"Content : {item.get('content','')}\nURL:{item.get('url','')}\nDate: {item.get('published_date','')}"
+                f"Content:{item.get('content','')}\nURL:{item.get('url','')}\nDate: {item.get('published_date','')}"
                 for item in news_items
             ]
         ) 
@@ -69,3 +70,14 @@ class AINewsNode:
         state['summary']=response.content
         self.state['summary']=state['summary']
         return self.state
+    
+    def save_result(self,state):
+        frequency=self.state['frequency']
+        summary=self.state['summary']
+        filename=f"./News/{frequency}_summary.md"
+        with open(filename,'w') as f:
+            f.write(f"# {frequency.capitalize()} News Summary\n\n")
+            f.write(summary)
+        self.state['filename']=filename
+        return self.state
+    
