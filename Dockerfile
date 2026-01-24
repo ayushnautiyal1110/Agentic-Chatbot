@@ -15,6 +15,5 @@ RUN pip install -r requirements.txt
 #Port
 EXPOSE 8501
 
-
 # Main Command
 CMD ["streamlit","run","app.py"]
