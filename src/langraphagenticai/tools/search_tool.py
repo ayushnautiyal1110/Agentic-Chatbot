@@ -1,4 +1,4 @@
-from langchain_tavily_search import TavilySearch
+from langchain_tavily import TavilySearch
 from langgraph.prebuilt import ToolNode
 
 def get_tools():
